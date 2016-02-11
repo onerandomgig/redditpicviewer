@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <!-- Music track album art -->
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/trackIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:background="@color/audioBgColor"
+        android:scaleType="fitCenter"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@drawable/music_icon"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundedCornerRadius="2dp"
+        fresco:roundingBorderColor="@color/audioBorderColor"
+        fresco:roundingBorderWidth="1dp" />
+
+    <!-- Track title -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/trackName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/trackIcon"
+        android:layout_toRightOf="@+id/trackIcon"
+        android:singleLine="true"
+        android:textColor="@color/shadowColor"
+        android:textSize="15sp" />
+
+    <!-- Select option to select a music track -->
+    <ImageView
+        android:id="@+id/playButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/play"/>
+
+</RelativeLayout>

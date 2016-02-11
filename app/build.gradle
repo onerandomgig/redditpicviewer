@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "in.continuousloop.redditpicviewer"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+
+    // Lombok support for cleaner code (eliminate writing getters & setters)
+    provided 'org.projectlombok:lombok:1.16.6'
+    apt "org.projectlombok:lombok:1.12.6"
+
+    // Dagger 2 and Compiler (for dependency injection)
+    compile 'com.google.dagger:dagger:2.0.2'
+    apt 'com.google.dagger:dagger-compiler:2.0.2'
+
+    // Needed for @Generated annotation (missing in Java <= 1.6; therefore, Android)
+    compile 'javax.annotation:jsr250-api:1.0'
+
+    // Fresco image library (for image handling)
+    compile 'com.facebook.fresco:fresco:0.9.0+'
+
+    // Jackson mapper (for mapping json data to objects)
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1'
+
+    // Networking libraries
+    compile 'org.apache.httpcomponents:httpcore:4.4.4'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.squareup.okhttp:okhttp:2.7.4'
+}

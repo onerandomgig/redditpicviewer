@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp">
+
+    <!-- Image displayed in picture grid -->
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/picThumbnailImg"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:padding="5dp"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@drawable/default_image"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundedCornerRadius="2dp"
+        fresco:roundingBorderColor="@color/borderColor"
+        fresco:roundingBorderWidth="1dp" />
+
+    <!-- Display when image is selected -->
+    <RelativeLayout
+        android:id="@+id/selectionLayout"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shadow_bg"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_checkmark" />
+    </RelativeLayout>
+
+</RelativeLayout>

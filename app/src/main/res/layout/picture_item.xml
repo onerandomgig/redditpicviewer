@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <!-- Thumbnail image -->
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/picThumbnailImg"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:padding="5dp"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:fadeDuration="300"
+        fresco:placeholderImage="@drawable/default_image"
+        fresco:placeholderImageScaleType="center"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:progressBarImage="@drawable/spinner"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:roundedCornerRadius="2dp"
+        fresco:roundingBorderColor="@color/borderColor"
+        fresco:roundingBorderWidth="1dp" />
+
+    <!-- Title label -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/picTitleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/picThumbnailImg"
+        android:clickable="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/titleColor" />
+
+    <!-- Submitted time label -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/picSubmittedTimeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/picTitleLabel"
+        android:layout_alignStart="@+id/picTitleLabel"
+        android:layout_below="@+id/picTitleLabel"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <!-- Number of comments label -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/commentsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/picSubmittedTimeLabel"
+        android:layout_alignStart="@+id/picSubmittedTimeLabel"
+        android:layout_below="@+id/picSubmittedTimeLabel"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <!-- Score / Points label -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/pointsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/picSubmittedTimeLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@+id/commentsLabel"
+        android:layout_toRightOf="@+id/commentsLabel"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <!-- Author label -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/authorLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/picTitleLabel"
+        android:layout_marginLeft="5dp"
+        android:layout_toEndOf="@+id/picSubmittedTimeLabel"
+        android:layout_toRightOf="@+id/picSubmittedTimeLabel"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/authorColor" />
+
+</RelativeLayout>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Reddit /r/pics</string>
+    <string name="action_settings">Settings</string>
+    <string name="no_permalink">This picture does not have a link to load</string>
+
+    <string name="section_hot">HOT</string>
+    <string name="section_new">NEW</string>
+    <string name="section_rising">RISING</string>
+
+    <string name="intruction_text">Select upto <b>15</b> images to create your video (min. <b>10</b>)</string>
+    <string name="image_select_title">Select Pictures</string>
+    <string name="next">Next</string>
+    <string name="start">Start</string>
+
+    <string name="music_select_title">Select Music</string>
+</resources>

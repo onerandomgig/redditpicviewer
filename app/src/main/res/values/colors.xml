@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00bbff</color>
+    <color name="colorPrimaryDark">#009fd9</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="titleColor">#f26214</color>
+    <color name="authorColor">#2bc1f8</color>
+    <color name="borderColor">#A7A7A7</color>
+    <color name="shadowColor">#88000000</color>
+    <color name="blackColor">#000000</color>
+    <color name="whiteColor">#FFFFFF</color>
+    <color name="audioBgColor">#F3F3F3</color>
+    <color name="audioBorderColor">#DFDFDF</color>
+
+</resources>

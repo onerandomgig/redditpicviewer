@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="in.continuousloop.redditpicviewer">
+
+    <!-- To access pictures and make API calls -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.NETWORK" />
+
+    <!-- To save downloaded pictures to disk cache -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".RedditPicViewerApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/reddit_app_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- HomeActivity to show the picture listing for the various sections -->
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- WebViewActivity to load a web page url -->
+        <activity
+            android:name=".WebViewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- ImageViewActivity to show high resolution images -->
+        <activity
+            android:name=".ImageViewActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- ImageViewSelectionActivity to select the pictures for video -->
+        <activity
+            android:name=".ImageViewSelectionActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- MusicSelectionActivity to select the music for video -->
+        <activity
+            android:name=".MusicSelectionActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- MusicSlideshowActivity to play the slideshow -->
+        <activity
+            android:name=".MusicSlideshowActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+    </application>
+
+</manifest>

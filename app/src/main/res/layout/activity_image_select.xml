@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:elevation="6dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/image_select_title"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:layout_marginLeft="5dp" />
+
+            <!-- Next button displayed after minimum 10 images are selected -->
+            <in.continuousloop.redditpicviewer.views.OpenSansRegularTextButton
+                android:id="@+id/toolbarNext"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@color/colorAccent"
+                android:text="@string/next"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:visibility="invisible"
+                android:textColor="@color/whiteColor"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_margin="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <!-- Instruction text to prompt user to select images -->
+    <in.continuousloop.redditpicviewer.views.OpenSansRegularTextView
+        android:id="@+id/instructionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="7dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/intruction_text"
+        android:textColor="@color/blackColor"
+        android:textSize="15sp" />
+
+    <!-- Separator line -->
+    <View
+        android:id="@+id/dividerLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/instructionText"
+        android:background="@color/borderColor" />
+
+    <!-- Show pictures -->
+    <GridView
+        android:id="@+id/pictureGalleryGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/dividerLine"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:horizontalSpacing="10dp"
+        android:numColumns="2"
+        android:verticalSpacing="10dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:progressBarStyle"
+        android:layout_width="@dimen/loading_view_progress_size"
+        android:layout_height="@dimen/loading_view_progress_size"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+</RelativeLayout>
