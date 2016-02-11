@@ -12,10 +12,8 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         fresco:actualImageScaleType="focusCrop"
-        fresco:fadeDuration="300"
-        fresco:progressBarAutoRotateInterval="1000"
-        fresco:progressBarImage="@drawable/spinner"
-        fresco:progressBarImageScaleType="centerInside" />
+        fresco:backgroundImage="@color/blackColor"
+        fresco:fadeDuration="200" />
 
     <!-- A simple shadow view at the bottom of the image to enhance title text visibility -->
     <View
