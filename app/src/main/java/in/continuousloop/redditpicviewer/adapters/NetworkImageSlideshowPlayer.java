@@ -36,6 +36,7 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
     private String mNextPicsPageTag;
 
+    private int mCurrentImgIdx;
     private boolean isPlaying;
 
     private SubredditSection mCurrentSection;
@@ -47,10 +48,6 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
     private List<SubredditPicItem> imageList;
 
     private MediaPlayer audioPlayer;
-
-    private Thread mSlideshowThread;
-
-    private final Object mImageFetchLock = new Object();
 
     private Handler mSlideDisplayHandler;
     private ControllerListener imageControllerListener;
@@ -101,7 +98,6 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
             audioPlayer = null;
 
             isPlaying = false;
-            mSlideshowThread.interrupt();
         }
     }
 
@@ -126,7 +122,6 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
                 imageList.addAll(picsResponse.getPictures());
 
                 if (startSlideShow) {
-                    // Start the slideshow
                     _startSlideshow();
                 }
             }
@@ -146,6 +141,8 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
     private void _startSlideshow() {
 
         try {
+            mCurrentImgIdx = 0;
+
             _initMediaPlayer();
 
             audioPlayer.setDataSource(musicTrackItem.getUrl());
@@ -156,8 +153,31 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
             Log.e(NetworkImageSlideshowPlayer.class.getName(), "_startSlideshow: Failed to play audio track for slideshow");
         }
 
-        mSlideshowThread = _getSlideshowRunner();
-        mSlideshowThread.start();
+        // Start the slideshow and show the first image.
+        SubredditPicItem lPicItem = imageList.get(mCurrentImgIdx++);
+        Message lMsg = Message.obtain();
+        lMsg.obj = lPicItem;
+        mSlideDisplayHandler.sendMessage(lMsg);
+    }
+
+    /**
+     * Fetch and display the next slide.
+     */
+    private void _showNextSlide() {
+
+        // Delay sending the message by 2 secs. This will give the previous image atleast 2 seconds viewer time.
+        SubredditPicItem lPicItem = imageList.get(mCurrentImgIdx++);
+        Message lMsg = Message.obtain();
+        lMsg.obj = lPicItem;
+        mSlideDisplayHandler.sendMessageDelayed(lMsg, 2000);
+
+        // Fetch the next page images when you are 5 images away from the last image.
+        // If the next page could not be fetched, reset the index to the beginning.
+        if (mCurrentImgIdx == imageList.size() - 5) {
+            _fetchImages(false);
+        } else if (mCurrentImgIdx >= imageList.size()) {
+            mCurrentImgIdx = 0;
+        }
     }
 
     /**
@@ -184,79 +204,27 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
                     @Nullable Animatable anim) {
                 Log.d(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Image downloaded");
 
-                // Notify to display the next image.
-                synchronized (mImageFetchLock) {
-                    mImageFetchLock.notifyAll();
+                if (isPlaying) {
+                    _showNextSlide();
                 }
             }
 
             @Override
             public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
 
-                // Notify to display the next image.
-                synchronized (mImageFetchLock) {
-                    mImageFetchLock.notifyAll();
+                if (isPlaying) {
+                    _showNextSlide();
                 }
             }
 
             @Override
             public void onFailure(String id, Throwable throwable) {
 
-                // Notify to display the next image.
-                synchronized (mImageFetchLock) {
-                    mImageFetchLock.notifyAll();
+                if (isPlaying) {
+                    _showNextSlide();
                 }
             }
         };
-    }
-
-    /**
-     * The thread that schedules the slideshow
-     *
-     * @return {@link Thread}
-     */
-    private Thread _getSlideshowRunner() {
-        return new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                // Show the first image.
-                SubredditPicItem lPicItem = imageList.get(0);
-                Message lMsg = Message.obtain();
-                lMsg.obj = lPicItem;
-                mSlideDisplayHandler.sendMessage(lMsg);
-
-                // Show images starting from 1
-                int lCurrentImgIdx = 1;
-                while (isPlaying) {
-
-                    // Wait maximum 5s before displaying the next image.
-                    // By then, the current image would have finished downloading.
-                    synchronized (mImageFetchLock) {
-                        try {
-                            mImageFetchLock.wait(5000);
-                        } catch (InterruptedException e) {
-                            Log.e(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Interrupted while waiting for image to download");
-                        }
-                    }
-
-                    // Delay sending the message by 2 secs. This will give the previous image atleast 2 seconds viewer time.
-                    lPicItem = imageList.get(lCurrentImgIdx);
-                    lMsg = Message.obtain();
-                    lMsg.obj = lPicItem;
-                    mSlideDisplayHandler.sendMessageDelayed(lMsg, 2000);
-                    lCurrentImgIdx++;
-
-                    // Fetch the next page images when you are 5 images away from the last image.
-                    // If the next page could not be fetched, reset the index to the beginning.
-                    if (lCurrentImgIdx == imageList.size() - 5) {
-                        _fetchImages(false);
-                    } else if (lCurrentImgIdx >= imageList.size()) {
-                        lCurrentImgIdx = 0;
-                    }
-                }
-            }
-        });
     }
 
     /**
@@ -270,6 +238,9 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
             this.slideshowPlayer = slideshowPlayer;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void handleMessage(Message msg) {
 
             SubredditPicItem lPicItem = (SubredditPicItem) msg.obj;
