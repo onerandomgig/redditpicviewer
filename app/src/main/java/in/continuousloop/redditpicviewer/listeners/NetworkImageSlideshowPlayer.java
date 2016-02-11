@@ -127,12 +127,14 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
                 if (startSlideShow) {
 
+                    // Create and register a controller to listen to image download events.
                     DraweeController controller = Fresco.newDraweeControllerBuilder()
                             .setControllerListener(_getControllerListener())
                             .setUri(imageList.get(0).getImageUrlWithResolution(0, 0))
                             .build();
                     mImageView.setController(controller);
 
+                    // Start the slideshow
                     _startSlideshow();
                 }
             }
@@ -183,7 +185,7 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
                             }
                         });
 
-                        // Wait maximum 10s.
+                        // Wait maximum 5s before displaying the next image.
                         synchronized (mImageFetchLock) {
                             mImageFetchLock.wait(5000);
                         }
@@ -226,6 +228,15 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
                     @Nullable ImageInfo imageInfo,
                     @Nullable Animatable anim) {
                 Log.d(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Image downloaded");
+
+                // Sleep for 2secs after the image is fetched before notifying to display the net image.
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    Log.e(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Interrupted while allowing image to display");
+                }
+
+                // Notify to display the next image.
                 synchronized (mImageFetchLock) {
                     mImageFetchLock.notifyAll();
                 }
@@ -233,6 +244,8 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
             @Override
             public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+
+                // Notify to display the next image.
                 synchronized (mImageFetchLock) {
                     mImageFetchLock.notifyAll();
                 }
@@ -240,6 +253,8 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
             @Override
             public void onFailure(String id, Throwable throwable) {
+
+                // Notify to display the next image.
                 synchronized (mImageFetchLock) {
                     mImageFetchLock.notifyAll();
                 }
