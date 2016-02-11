@@ -1,15 +1,14 @@
 package in.continuousloop.redditpicviewer.adapters;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -51,27 +50,23 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
     private Thread mSlideshowThread;
 
-    private Object mImageFetchLock;
-    private Context mContext;
+    private final Object mImageFetchLock = new Object();
 
+    private Handler mSlideDisplayHandler;
     private ControllerListener imageControllerListener;
 
     /**
      * Create an instance of the NetworkImageSlideshowPlayer
      *
-     * @param aContext        - The activity that displays the slideshow
      * @param draweeView      - The imageview to display the image
      * @param titleView       - The textview to display the title
      * @param aMusicTrackItem - The music track that should be played during the slideshow
      * @param aCurrentSection - The section to fetch the images from (HOT, NEW, RISING)
      */
-    public NetworkImageSlideshowPlayer(Context aContext,
-                                       SimpleDraweeView draweeView,
+    public NetworkImageSlideshowPlayer(SimpleDraweeView draweeView,
                                        TextView titleView,
                                        MusicTrackItem aMusicTrackItem,
                                        SubredditSection aCurrentSection) {
-
-        mContext = aContext;
 
         mImageView = draweeView;
         mTitleView = titleView;
@@ -79,10 +74,10 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
         musicTrackItem = aMusicTrackItem;
         mCurrentSection = aCurrentSection;
 
-        mImageFetchLock = new Object();
         imageList = new ArrayList<>();
 
         imageControllerListener = _getControllerListener();
+        mSlideDisplayHandler = new ImageDisplayHandler(this);
     }
 
     /**
@@ -138,7 +133,7 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
             @Override
             public void handleError(String aErrorMsg) {
-                Toast.makeText(mContext, aErrorMsg, Toast.LENGTH_LONG);
+
             }
         });
     }
@@ -161,56 +156,7 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
             Log.e(NetworkImageSlideshowPlayer.class.getName(), "_startSlideshow: Failed to play audio track for slideshow");
         }
 
-        mSlideshowThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                int lCurrentImgIdx = 0;
-                try {
-                    while (isPlaying) {
-
-                        final SubredditPicItem lPicItem = imageList.get(lCurrentImgIdx);
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                // Create and register a controller to listen to image download events.
-                                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                                        .setControllerListener(imageControllerListener)
-                                        .setUri(Uri.parse(lPicItem.getImageUrlWithResolution(0, 0)))
-                                        .build();
-                                mImageView.setController(controller);
-
-                                // Title view
-                                mTitleView.setText(lPicItem.getTitle());
-                            }
-                        });
-
-                        // Wait maximum 5s before displaying the next image.
-                        // By then, the current image would have finished downloading.
-                        synchronized (mImageFetchLock) {
-                            mImageFetchLock.wait(5000);
-                        }
-
-                        // Sleep for 2secs after the image is fetched before notifying to display the net image.
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            Log.e(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Interrupted while allowing image to display");
-                        }
-                        lCurrentImgIdx++;
-
-                        if (lCurrentImgIdx == imageList.size() - 5) {
-                            _fetchImages(false);
-                        } else if (lCurrentImgIdx >= imageList.size()) {
-                            lCurrentImgIdx = 0;
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.i(NetworkImageSlideshowPlayer.class.getName(), "_startSlideshow: Slideshow interrupted.");
-                }
-            }
-        });
+        mSlideshowThread = _getSlideshowRunner();
         mSlideshowThread.start();
     }
 
@@ -226,10 +172,11 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
 
     /**
      * Get the {@link ControllerListener} to track image download events.
+     *
      * @return {@link ControllerListener}
      */
     private ControllerListener _getControllerListener() {
-        ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
+        return new BaseControllerListener<ImageInfo>() {
             @Override
             public void onFinalImageSet(
                     String id,
@@ -261,7 +208,81 @@ public class NetworkImageSlideshowPlayer implements MediaPlayer.OnPreparedListen
                 }
             }
         };
+    }
 
-        return controllerListener;
+    /**
+     * The thread that schedules the slideshow
+     *
+     * @return {@link Thread}
+     */
+    private Thread _getSlideshowRunner() {
+        return new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Show the first image.
+                SubredditPicItem lPicItem = imageList.get(0);
+                Message lMsg = Message.obtain();
+                lMsg.obj = lPicItem;
+                mSlideDisplayHandler.sendMessage(lMsg);
+
+                // Show images starting from 1
+                int lCurrentImgIdx = 1;
+                while (isPlaying) {
+
+                    // Wait maximum 5s before displaying the next image.
+                    // By then, the current image would have finished downloading.
+                    synchronized (mImageFetchLock) {
+                        try {
+                            mImageFetchLock.wait(5000);
+                        } catch (InterruptedException e) {
+                            Log.e(NetworkImageSlideshowPlayer.class.getName(), "onFinalImageSet: Interrupted while waiting for image to download");
+                        }
+                    }
+
+                    // Delay sending the message by 2 secs. This will give the previous image atleast 2 seconds viewer time.
+                    lPicItem = imageList.get(lCurrentImgIdx);
+                    lMsg = Message.obtain();
+                    lMsg.obj = lPicItem;
+                    mSlideDisplayHandler.sendMessageDelayed(lMsg, 2000);
+                    lCurrentImgIdx++;
+
+                    // Fetch the next page images when you are 5 images away from the last image.
+                    // If the next page could not be fetched, reset the index to the beginning.
+                    if (lCurrentImgIdx == imageList.size() - 5) {
+                        _fetchImages(false);
+                    } else if (lCurrentImgIdx >= imageList.size()) {
+                        lCurrentImgIdx = 0;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Class to handle displaying of slideshow image.
+     */
+    static class ImageDisplayHandler extends Handler {
+
+        private NetworkImageSlideshowPlayer slideshowPlayer;
+
+        public ImageDisplayHandler(NetworkImageSlideshowPlayer slideshowPlayer) {
+            this.slideshowPlayer = slideshowPlayer;
+        }
+
+        public void handleMessage(Message msg) {
+
+            SubredditPicItem lPicItem = (SubredditPicItem) msg.obj;
+
+            // Create and register a controller to listen to image download events.
+            DraweeController controller = Fresco.newDraweeControllerBuilder()
+                    .setControllerListener(slideshowPlayer.imageControllerListener)
+                    .setUri(Uri.parse(lPicItem.getImageUrlWithResolution(0, 0)))
+                    .build();
+            slideshowPlayer.mImageView.setController(controller);
+
+            // Title view
+            slideshowPlayer.mTitleView.setText(lPicItem.getTitle());
+        }
     }
 }

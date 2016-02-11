@@ -40,7 +40,7 @@ public class MusicSlideshowActivity extends AppCompatActivity {
         SubredditSection lCurrentSection = APIManager.getInstance().getSubredditSections().get(lCurrentSelectedTab);
 
         // The slide show player instance.
-        slideshowPlayer = new NetworkImageSlideshowPlayer(this, lImageView, lTitleView, musicTrackItem, lCurrentSection);
+        slideshowPlayer = new NetworkImageSlideshowPlayer(lImageView, lTitleView, musicTrackItem, lCurrentSection);
     }
 
     /**
