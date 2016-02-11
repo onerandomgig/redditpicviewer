@@ -23,7 +23,7 @@
         fresco:placeholderImageScaleType="center"
         fresco:progressBarAutoRotateInterval="1000"
         fresco:progressBarImage="@drawable/spinner"
-        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarImageScaleType="none"
         fresco:roundedCornerRadius="2dp"
         fresco:roundingBorderColor="@color/borderColor"
         fresco:roundingBorderWidth="1dp" />
