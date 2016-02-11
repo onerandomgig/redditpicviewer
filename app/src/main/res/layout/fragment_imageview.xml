@@ -13,7 +13,7 @@
         android:layout_centerHorizontal="true"
         fresco:actualImageScaleType="focusCrop"
         fresco:backgroundImage="@color/blackColor"
-        fresco:fadeDuration="200" />
+        fresco:fadeDuration="100" />
 
     <!-- A simple shadow view at the bottom of the image to enhance title text visibility -->
     <View
