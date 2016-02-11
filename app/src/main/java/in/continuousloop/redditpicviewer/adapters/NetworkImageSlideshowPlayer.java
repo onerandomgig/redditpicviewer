@@ -1,4 +1,4 @@
-package in.continuousloop.redditpicviewer.listeners;
+package in.continuousloop.redditpicviewer.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.continuousloop.redditpicviewer.api.APIManager;
+import in.continuousloop.redditpicviewer.listeners.PicSubredditResponseListener;
 import in.continuousloop.redditpicviewer.model.MusicTrackItem;
 import in.continuousloop.redditpicviewer.model.SubredditPicItem;
 import in.continuousloop.redditpicviewer.model.SubredditPicsWrapper;

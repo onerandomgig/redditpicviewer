@@ -9,7 +9,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import in.continuousloop.redditpicviewer.api.APIManager;
 import in.continuousloop.redditpicviewer.constants.AppConstants;
-import in.continuousloop.redditpicviewer.listeners.NetworkImageSlideshowPlayer;
+import in.continuousloop.redditpicviewer.adapters.NetworkImageSlideshowPlayer;
 import in.continuousloop.redditpicviewer.model.MusicTrackItem;
 import in.continuousloop.redditpicviewer.model.SubredditSection;
 
